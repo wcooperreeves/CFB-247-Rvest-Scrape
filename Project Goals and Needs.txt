@@ -1,0 +1,14 @@
+Personal Goals / Project Needs
+
+
+Notes: have never used rvest before so the goal of this project is to feel more comfortable with that package.
+
+Project Steps to Success:
+  1. Create Mapping Template file to match Universities Name and Conference with what will be used on the 247 web link.  ## Completed 12-6-2021 
+    - EX: Boston College = boston-college on their website. https://247sports.com/college/boston-college/Season/2005-Football/Commits/?sortby=rank
+    - Mapping Table Name: (college-list.xlsx)
+ 2. Learn how to use rvest and grab data wanted from 247's website ## Completed 12-6-2021
+ 3. Create Script that will use Mapping Table and Rvest to create a .csv file that will be consumed by RShiny App just for 2021. ## Completed 12-6-2021
+    -R script: Scrape247.R
+    -Csv output: Player_Data_2021.csv
+ 4. Make above script work from 2011-2021. 

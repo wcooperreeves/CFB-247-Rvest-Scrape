@@ -14,7 +14,7 @@ cl <- readxl::read_excel('./college-list.xlsx')
 # cl$ID <- tolower(gsub(' ', '-',cl$ID))
 # xlsx::write.xlsx(cl,'./college-list.xlsx')
 
-# nebraska <- filter(cl,cl$ID == 'clemson')
+nebraska <- filter(cl,cl$ID == 'washington-state')
 # y <- 1
 # i <- 1
 year <- seq(from = 2005, to = 2021, by = 1)
@@ -32,7 +32,7 @@ Scrape_247_Data <- function(cl,year){
   
   
     CFB2021page <- paste0("https://247sports.com/college/",cl$ID[i],"/Season/",year[y],'-Football/Commits/?sortby=rank')
-      # CFB2021page <- paste0("https://247sports.com/college/",nebraska$ID[1],"/Season/",year,'-Football/Commits/?sortby=rank') #nebraska had to be difficult
+      # CFB2021page <- paste0("https://247sports.com/college/",nebraska$ID[1],"/Season/",year[y],'-Football/Commits/?sortby=rank') #nebraska had to be difficult
     CFB2021 <- rvest::read_html(CFB2021page)
     
     # data <- CFB2021 %>%
@@ -50,10 +50,15 @@ Scrape_247_Data <- function(cl,year){
     # player_location <- gsub('(Prep)',"",player_location)
   
     
-    player_location <- regmatches(player_location, gregexpr("(?<=\\().*?(?=\\))", player_location, perl=T))  # Grabbing City / State
+    player_location <- regmatches(player_location, gregexpr("(?<=\\()([^()]*?)(?=\\)[^()]*$)", player_location, perl=T))  # Grabbing City / State and only taking data from last parenthesis
     player_location <- unlist(player_location)
-    player_location <- player_location[!grepl('Prep',player_location)] #just in case if Prep is in parenthesis
-    player_location <- player_location[!grepl('PREP',player_location)] #just in case if Prep is in parenthesis
+    # player_location <- player_location[!grepl('Prep',player_location)] #just in case if Prep is in parenthesis
+    # player_location <- player_location[!grepl('PREP',player_location)] #just in case if Prep is in parenthesis
+    if(length(which(player_location <2)) > 0){
+      player_names  <- player_names[-which(player_location <2)] 
+    }
+    
+    #removing Foreign Players that dont have a location provided
     player_location <- player_location[nchar(player_location)>2]  #only keeping locations above 2 letters, just in case if a state by itself gets through
     
     player_position <- CFB2021 %>%
