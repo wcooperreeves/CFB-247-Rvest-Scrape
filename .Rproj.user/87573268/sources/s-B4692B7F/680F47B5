@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1638862738829.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2874866067",
+    "id" : "680F47B5",
+    "lastKnownWriteTime" : 1568838384,
+    "last_content_update" : 1568838384,
+    "path" : "~/GitHub/CFB-247-Rvest-Scrape/CFBRecruit/server.R",
+    "project_path" : "CFBRecruit/server.R",
+    "properties" : {
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

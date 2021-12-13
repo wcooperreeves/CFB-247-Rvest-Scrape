@@ -14,10 +14,18 @@ cl <- readxl::read_excel('./college-list.xlsx')
 # cl$ID <- tolower(gsub(' ', '-',cl$ID))
 # xlsx::write.xlsx(cl,'./college-list.xlsx')
 
+first_run <- FALSE  #Always set to false, change to true so it will pick up all years provided. 
+
+
 nebraska <- filter(cl,cl$ID == 'washington-state')
 # y <- 1
 # i <- 1
-year <- seq(from = 2005, to = 2021, by = 1)
+if(first_run = TRUE){
+  year <- seq(from = 2005, to = 2021, by = 1)
+} else {
+  year <- 2021
+}
+
 
 # cl <- filter(cl,cl$Conference == 'ACC')
  #Scraping Website using rvest
@@ -47,13 +55,10 @@ Scrape_247_Data <- function(cl,year){
       rvest::html_nodes('span.meta') %>%
       rvest::html_text()
     
-    # player_location <- gsub('(Prep)',"",player_location)
   
     
     player_location <- regmatches(player_location, gregexpr("(?<=\\()([^()]*?)(?=\\)[^()]*$)", player_location, perl=T))  # Grabbing City / State and only taking data from last parenthesis
     player_location <- unlist(player_location)
-    # player_location <- player_location[!grepl('Prep',player_location)] #just in case if Prep is in parenthesis
-    # player_location <- player_location[!grepl('PREP',player_location)] #just in case if Prep is in parenthesis
     if(length(which(player_location <2)) > 0){
       player_names  <- player_names[-which(player_location <2)] 
     }
@@ -78,13 +83,14 @@ Scrape_247_Data <- function(cl,year){
     player_rating <- as.numeric(player_rating)
     
     
-    test <- CFB2021 %>% 
-      rvest::html_nodes('span.icon-starsolid yellow')
-    
+    ## Star Ratings based on https://247sports.com/college/georgia/LongFormArticle/Georgia-Bulldogs-Recruiting-Everything-you-need-to-know-about-247Sports-Rating-Process-143324123/#143324123_3
+    ## >=98.3 = 5 Star
+    ## >= 89 = 4 star
+    ## >= 79.6 = 3 star
+    ## <= 79.59 = 2 star
+    ## NA Does Exist. Will change to 0 Star
     star_rating <- cut(player_rating, c(0,.01,.796,.89,.983,Inf),labels = c(0,2,3,4,5))
-    
-    
-    
+
     data <- data.frame(player_names,player_location,player_position,player_rating, star_rating, stringsAsFactors = F)
     
     data$University <- cl$Name[i]
@@ -93,11 +99,6 @@ Scrape_247_Data <- function(cl,year){
     head(data)
     
     bound_data <- rbind(bound_data,data)
-    # print(bound_data)
-    # browser()
-    # head(datalist)
-    # datalist[[i]] <- data
-    # print(head(datalist[[i]]))
     bound_data$player_rating[is.na(bound_data$player_rating)] <- 0
     bound_data$star_rating[is.na(bound_data$star_rating)] <- 0
     Sys.sleep(3)
@@ -107,19 +108,21 @@ Scrape_247_Data <- function(cl,year){
 }
 
 data <- Scrape_247_Data(cl = cl, year = year)
-## Star Ratings based on https://247sports.com/college/georgia/LongFormArticle/Georgia-Bulldogs-Recruiting-Everything-you-need-to-know-about-247Sports-Rating-Process-143324123/#143324123_3
-## >=98.3 = 5 Star
-## >= 89 = 4 star
-## >= 79.6 = 3 star
-## <= 79.59 = 2 star
-## NA Does Exist. Will change to 0 Star
 
-
-
-### Geolocation Data for US Map
 geolocation_data <- tidygeocoder::geo(data$player_location)
 geolocation_data$address <- NULL
 final_data <- dplyr::bind_cols(data,geolocation_data)
 names(final_data) <- c('Player Name','City, State','Position','Composite Rating','Star Rating','University','Conference','Class','Latitude', 'Longitude')
+if(first_run = TRUE){
+  write.csv(final_data,'./Player_Data.csv', row.names = FALSE)
+} else {
+  original_data <- read.csv('./Player_Data.csv')
+  final_data <- rbind(original_data, final_data)
+  write.csv(final_data, './Player_data.csv', row.names = FALSE)
+}
 
-write.csv(final_data,'./Player_Data.csv', row.names = FALSE)
+### Geolocation Data for US Map
+
+
+
+
