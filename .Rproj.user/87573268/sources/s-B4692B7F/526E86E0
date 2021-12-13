@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1638862738739.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2564744059",
+    "id" : "526E86E0",
+    "lastKnownWriteTime" : 1638862751,
+    "last_content_update" : 1638862751532,
+    "path" : "~/GitHub/CFB-247-Rvest-Scrape/CFBRecruit/ui.R",
+    "project_path" : "CFBRecruit/ui.R",
+    "properties" : {
+        "cursorPosition" : "0,0",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
