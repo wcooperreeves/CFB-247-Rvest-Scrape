@@ -3,41 +3,8 @@ library(leaflet)
 library(tidyverse)
 library(DT)
 library(shinydashboard)
-CFBData <- read.csv('C:/Users/wcoop/Documents/GitHub/CFB-247-Rvest-Scrape/Player_Data.csv')
-CFBData$Class <- as.character(CFBData$Class)
+library(shinyWidgets)
 
-# shinyUI(fluidPage(
-# 
-#     
-#     header <- dashboardHeader(
-#         title = '247 Recruitment Data'
-#     ),
-#     body <- dashboardBody()
-# 
-#     navbarPage
-#     navbarPage("247 Recruitment Data",
-# 
-#         sidebarPanel(
-# 
-#             uiOutput('CollegeChoice'),
-#             uiOutput('YearChoiceBegin'),
-#             uiOutput('YearChoiceEnd')
-# 
-#         ),
-#         tabPanel("Map",
-# 
-# 
-#                    leafletOutput('usmap')
-# 
-#                  ),
-#         tabPanel("Charts"),
-#         tabPanel("Raw Data",
-#                  DT::dataTableOutput('CFBFiltered')
-# 
-#                  )
-#     )
-#     
-# ))
 
 
 dashboardPage(
@@ -48,8 +15,10 @@ dashboardPage(
         uiOutput('YearChoiceEnd'),
         sidebarMenu(
             menuItem('Recruit Map', tabName = 'map'),
-            menuItem('Charts', tabName = 'chart'),
-            menuItem('Dataset', tabName = 'rawdata')
+            menuItem('College Charts', tabName = 'chart'),
+            menuItem('Draft Questions', tabName = 'draft'),
+            menuItem('247 Dataset', tabName = 'rawdata'),
+            menuItem('Draft Data')
         )
     ),
     dashboardBody(
@@ -58,7 +27,31 @@ dashboardPage(
                     fluidRow(
                         leafletOutput('usmap', height = 1000)
                     )),
-            tabItem('chart'),
+            tabItem('chart',
+                    fluidRow(
+                      splitLayout(
+                        style = "border: 1px solid silver;",
+                        cellWidths = 500,
+                        cellArgs = list(style = "padding: 5px"),
+                        plotOutput("fivestarplot"), #Count of position per rating for five star
+                        plotOutput("fourstarplot"), #Count of position per rating for four star
+                        plotOutput("threestarplot"), #Count of position per rating for three star
+                        plotOutput('twostarplot') #Count of position per rating for two star
+                      )
+                    )#,
+                    # fluidRow(
+                    #   splitLayout(
+                    #     style = "border: 1px solid silver;",
+                    #     cellWidths = 300,
+                    #     cellArgs = list(style = "padding: 5px"),
+                    #     plotOutput("avgratingperschool"),
+                    #     box(
+                    #        uiOutput('avgratingselect') #pickerinput
+                    #       ),
+                    #     DT:dataTableOutput('Avg Rating Per State')
+                    #   )
+                    # )
+                  ),
             tabItem('rawdata',
                     DT::dataTableOutput('CFBFiltered'),
                     downloadButton('downloadCSVFull',"Download Full Data"),
