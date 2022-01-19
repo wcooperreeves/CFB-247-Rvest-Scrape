@@ -11,4 +11,7 @@ Project Steps to Success:
  3. Create Script that will use Mapping Table and Rvest to create a .csv file that will be consumed by RShiny App just for 2021. ## Completed 12-6-2021
     -R script: Scrape247.R
     -Csv output: Player_Data_2021.csv
- 4. Make above script work from 2011-2021. 
+ 4. Make above script work from 2005 to any year req'd ## Completed 12-13-2021
+    - Created a new variable first_run, always set to FALSE. Will run from the range of years requested by the user, otherwise if you choose false it will only pick the one year and then append it onto already existing data (avoid the year loop in future runs)
+ 5. Create Basic R Shiny App ## Completed 12-13-2021
+    - Create the base app and test that the long / lat provided for players will work with Leaflet + Filtering on that data using reactivity ## Completed 12-13-2021
