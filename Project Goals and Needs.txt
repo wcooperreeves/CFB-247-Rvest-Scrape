@@ -1,7 +1,7 @@
 Personal Goals / Project Needs
 
 
-Notes: have never used rvest before so the goal of this project is to feel more comfortable with that package.
+Notes: have never used rvest before so the goal of this project is to feel more comfortable with that package. Possibly figure out how to grab NFL Drafting Data so I can see Star Rating vs Draft vs CAR (PFF personal evaluation of a player)
 
 Project Steps to Success:
   1. Create Mapping Template file to match Universities Name and Conference with what will be used on the 247 web link.  ## Completed 12-6-2021 
@@ -15,3 +15,14 @@ Project Steps to Success:
     - Created a new variable first_run, always set to FALSE. Will run from the range of years requested by the user, otherwise if you choose false it will only pick the one year and then append it onto already existing data (avoid the year loop in future runs)
  5. Create Basic R Shiny App ## Completed 12-13-2021
     - Create the base app and test that the long / lat provided for players will work with Leaflet + Filtering on that data using reactivity ## Completed 12-13-2021
+	*** NEED TO FIX LAT / LONG FOR SOME PLAYERS. LOOKS LIKE ITS NOT USING RIGHT LOCATION!!! ***
+ 6. Create charts section for CFB Data Quick Glances
+	- Star Rating count per school per position ## Completed 1/19/22
+	- Star Rating Table showing avg rating per position per state (provided in adjacent "box")
+	- Conference Composite rating Table with each Conference
+	- School by School in a Conference Avg Rating
+	- Avg Rating at Position for Selected School 
+ 7. Scrape PFF NFL Draft Data. Use https://stmorse.github.io/PFR-scrape.html as a basis for this part of project (for R)
+	- Want to see if i can find players in CFB Data and NFL. Try to see CAR ratings for Star Ratings, position, and School.
+		- Want to see if i can prove NC States claim that they take guys that are 3 / 4 Stars and get them drafted.
+	- # Avg Draft Position per position 

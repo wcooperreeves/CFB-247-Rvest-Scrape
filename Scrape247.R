@@ -14,13 +14,13 @@ cl <- readxl::read_excel('./college-list.xlsx')
 # cl$ID <- tolower(gsub(' ', '-',cl$ID))
 # xlsx::write.xlsx(cl,'./college-list.xlsx')
 
-first_run <- FALSE  #Always set to false, change to true so it will pick up all years provided. 
+first_run <- TRUE  #Always set to false, change to true so it will pick up all years provided. 
 
 
 nebraska <- filter(cl,cl$ID == 'washington-state')
 # y <- 1
 # i <- 1
-if(first_run = TRUE){
+if(first_run == TRUE){
   year <- seq(from = 2005, to = 2021, by = 1)
 } else {
   year <- 2021
@@ -40,7 +40,7 @@ Scrape_247_Data <- function(cl,year){
   
   
     CFB2021page <- paste0("https://247sports.com/college/",cl$ID[i],"/Season/",year[y],'-Football/Commits/?sortby=rank')
-      # CFB2021page <- paste0("https://247sports.com/college/",nebraska$ID[1],"/Season/",year[y],'-Football/Commits/?sortby=rank') #nebraska had to be difficult
+      # CFB2021page <- paste0("https://247sports.com/college/",nebraska$ID[1],"/Season/",2005,'-Football/Commits/?sortby=rank') #nebraska had to be difficult
     CFB2021 <- rvest::read_html(CFB2021page)
     
     # data <- CFB2021 %>%
@@ -55,7 +55,10 @@ Scrape_247_Data <- function(cl,year){
       rvest::html_nodes('span.meta') %>%
       rvest::html_text()
     
-  
+    player_attributes <- CFB2021 %>%
+      rvest::html_nodes('div.metrics') %>%
+      rvest::html_text()
+    
     
     player_location <- regmatches(player_location, gregexpr("(?<=\\()([^()]*?)(?=\\)[^()]*$)", player_location, perl=T))  # Grabbing City / State and only taking data from last parenthesis
     player_location <- unlist(player_location)
@@ -63,8 +66,18 @@ Scrape_247_Data <- function(cl,year){
       player_names  <- player_names[-which(player_location <2)] 
     }
     
+    player_attributes <- str_extract(player_attributes, pattern = "(?<=\n).*(?=\n)") # grab everything between line breaks \n
+    player_attributes <- gsub(" ",'', player_attributes, fixed = TRUE)
+    player_attributes <- player_attributes[c(1:length(player_names))]
+    player_height <- sub("/.*","",player_attributes)
+    player_weight <- sub(".*/","",player_attributes)
+    
     #removing Foreign Players that dont have a location provided
     player_location <- player_location[nchar(player_location)>2]  #only keeping locations above 2 letters, just in case if a state by itself gets through
+    player_location <- player_location[c(1:length(player_names))]
+    player_city  <- sub(",.*","",player_location)
+    player_state <- sub('.*, ','',player_location)
+
     
     player_position <- CFB2021 %>%
       rvest::html_nodes('div.position') %>%
@@ -91,8 +104,8 @@ Scrape_247_Data <- function(cl,year){
     ## NA Does Exist. Will change to 0 Star
     star_rating <- cut(player_rating, c(0,.01,.796,.89,.983,Inf),labels = c(0,2,3,4,5))
 
-    data <- data.frame(player_names,player_location,player_position,player_rating, star_rating, stringsAsFactors = F)
-    
+    data <- data.frame(player_names,player_city,player_state,player_position,player_height,player_weight,player_rating, star_rating, stringsAsFactors = F)
+    # browser()
     data$University <- cl$Name[i]
     data$Conference <- cl$Conference[i]
     data$Class      <- year[y]
@@ -101,7 +114,7 @@ Scrape_247_Data <- function(cl,year){
     bound_data <- rbind(bound_data,data)
     bound_data$player_rating[is.na(bound_data$player_rating)] <- 0
     bound_data$star_rating[is.na(bound_data$star_rating)] <- 0
-    Sys.sleep(3)
+    Sys.sleep(1.5)
     }
   }
  return(bound_data)
@@ -109,11 +122,11 @@ Scrape_247_Data <- function(cl,year){
 
 data <- Scrape_247_Data(cl = cl, year = year)
 
-geolocation_data <- tidygeocoder::geo(data$player_location)
+geolocation_data <- tidygeocoder::geo(city = data$player_city, state = data$player_state)
 geolocation_data$address <- NULL
 final_data <- dplyr::bind_cols(data,geolocation_data)
-names(final_data) <- c('Player Name','City, State','Position','Composite Rating','Star Rating','University','Conference','Class','Latitude', 'Longitude')
-if(first_run = TRUE){
+names(final_data) <- c('Player Name','City', 'State','Position','Height','Weight','Composite Rating','Star Rating','University','Conference','Class','Latitude', 'Longitude')
+if(first_run == TRUE){
   write.csv(final_data,'./Player_Data.csv', row.names = FALSE)
 } else {
   original_data <- read.csv('./Player_Data.csv')
