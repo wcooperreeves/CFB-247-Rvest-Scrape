@@ -123,7 +123,9 @@ Scrape_247_Data <- function(cl,year){
 data <- Scrape_247_Data(cl = cl, year = year)
 
 geolocation_data <- tidygeocoder::geo(city = data$player_city, state = data$player_state)
-geolocation_data$address <- NULL
+geolocation_data$city <- NULL
+geolocation_data$state <- NULL
+# geolocation_data$address <- NULL
 final_data <- dplyr::bind_cols(data,geolocation_data)
 names(final_data) <- c('Player Name','City', 'State','Position','Height','Weight','Composite Rating','Star Rating','University','Conference','Class','Latitude', 'Longitude')
 if(first_run == TRUE){
