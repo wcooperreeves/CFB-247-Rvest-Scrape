@@ -4,6 +4,7 @@ library(tidyverse)
 library(DT)
 library(shinydashboard)
 library(shinyWidgets)
+library(plotly)
 
 
 
@@ -38,26 +39,29 @@ dashboardPage(
                         plotOutput("threestarplot"), #Count of position per rating for three star
                         plotOutput('twostarplot') #Count of position per rating for two star
                       )
-                    )#,
-                    # fluidRow(
-                    #   splitLayout(
-                    #     style = "border: 1px solid silver;",
-                    #     cellWidths = 300,
-                    #     cellArgs = list(style = "padding: 5px"),
-                    #     plotOutput("avgratingperschool"),
-                    #     box(
-                    #        uiOutput('avgratingselect') #pickerinput
-                    #       ),
-                    #     DT:dataTableOutput('Avg Rating Per State')
-                    #   )
-                    # )
-                  ),
+                    ),
+                    fluidRow(
+                      splitLayout(
+                        style = "border: 1px solid silver;",
+                        cellWidths = 850,
+                        cellArgs = list(style = "padding: 5px"),
+                        plotlyOutput("heightdistribution"), # Line for each rating
+                        plotlyOutput("weightdistribution"),  # Line for each Rating
+                        box(
+                           uiOutput('distributionposition'),
+                           uiOutput('checkboxrating')
+                           )#pickerinput
+                          ),
+                        DT::dataTableOutput('Avg Rating Per State')
+                      )
+                    ),
             tabItem('rawdata',
                     DT::dataTableOutput('CFBFiltered'),
                     downloadButton('downloadCSVFull',"Download Full Data"),
                     downloadButton('downloadCSVFilt','Download Displayed Data')
-            )
-        ),
+                  )
 
-    )
-)
+           ) 
+        )
+
+   ) 

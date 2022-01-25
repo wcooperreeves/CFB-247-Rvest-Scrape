@@ -57,7 +57,7 @@ shinyServer(function(input, output) {
       df <- filter(CFBReactive(), Star.Rating == 5)
       ggplot(df, aes(x=Position))+
         geom_bar(color = 'black')+
-        labs(title='# of 5 Stars at each Position')+
+        labs(title=paste('# of 5 Stars at each Position for ',input$CollegeChoice))+
         geom_text(stat = 'count', aes(label =..count..), vjust = -1)
     })
     
@@ -65,7 +65,7 @@ shinyServer(function(input, output) {
       df <- filter(CFBReactive(), Star.Rating == 4)
       ggplot(df, aes(x=Position))+
         geom_bar(color = 'black')+
-        labs(title='# of 4 Stars at each Position')+
+        labs(title=paste('# of 4 Stars at each Position for ',input$CollegeChoice))+
         geom_text(stat = 'count', aes(label =..count..), vjust = -1)
     })
     
@@ -73,7 +73,7 @@ shinyServer(function(input, output) {
       df <- filter(CFBReactive(), Star.Rating == 3)
       ggplot(df, aes(x=Position))+
         geom_bar(color = 'black')+
-        labs(title='# of 3 Stars at each Position')+
+        labs(title=paste('# of 3 Stars at each Position for ',input$CollegeChoice))+
         geom_text(stat = 'count', aes(label =..count..), vjust = -1)
     })
     
@@ -81,11 +81,53 @@ shinyServer(function(input, output) {
       df <- filter(CFBReactive(), Star.Rating == 2)
       ggplot(df, aes(x=Position))+
         geom_bar(color = 'black')+
-        labs(title='# of 2 Stars at each Position')+
+        labs(title=paste('# of 2 Stars at each Position for ',input$CollegeChoice))+
         geom_text(stat = 'count', aes(label =..count..), vjust = -1)
     })
     
     ##Recruit Rating Section End##
+    
+    ### Distribution Plots ###
+    
+    output$distributionposition <- renderUI({
+      selectizeInput( inputId = 'distributionposition',
+                      label = 'Pick Position',
+                      choices = unique(CFBData$Position),
+                      selected = unique(CFBData$Position[1])
+                      )
+    })
+    
+    output$checkboxrating <- renderUI({
+      choice <- unique(CFBData$Star.Rating)
+      checkboxGroupInput( inputId = 'checkboxrating',
+                          label = 'Pick Star Rating',
+                          choices = choice,
+                          selected = choice)
+    })
+    
+    output$heightdistribution <- renderPlotly({
+      df <- filter(CFBData, CFBData$Position == input$distributionposition, CFBData$Star.Rating %in% input$checkboxrating)
+      pos <- input$distributionposition
+      df$Height <- as.factor(df$Height) 
+      # print(head(df))
+      ggplotly(ggplot(df,  aes(x = Height, color = Star.Rating, group = Star.Rating)) +
+                     geom_line(stat = 'count', size = 1.05))
+                     # labs(title=paste('Plot of Height Distribution for '))
+ 
+    })
+    
+    output$weightdistribution <- renderPlotly({
+      df <- filter(CFBData, CFBData$Position == input$distributionposition, CFBData$Star.Rating %in% input$checkboxrating)
+      pos <- input$distributionposition
+      df$Weight <- as.numeric(df$Weight)
+      # print(head(df))
+      ggplotly(ggplot(df,  aes(x = Weight, color = Star.Rating, group = Star.Rating)) +
+                 geom_line(stat = 'count', size = 1.05))
+                  # labs(title=paste('Plot of Weight Distribution for '))
+      
+    })
+    
+    ### Distribution Plots End ###
     
     ##Leaflet Map##
     output$usmap <- renderLeaflet({
