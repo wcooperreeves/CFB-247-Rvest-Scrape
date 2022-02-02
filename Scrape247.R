@@ -17,9 +17,10 @@ cl <- readxl::read_excel('./college-list.xlsx')
 first_run <- TRUE  #Always set to false, change to true so it will pick up all years provided. 
 
 
-nebraska <- filter(cl,cl$ID == 'washington-state')
+# nebraska <- dplyr::filter(cl,cl$ID == 'washington-state')
 # y <- 1
 # i <- 1
+
 if(first_run == TRUE){
   year <- seq(from = 2005, to = 2021, by = 1)
 } else {
@@ -31,6 +32,15 @@ if(first_run == TRUE){
  #Scraping Website using rvest
 
 Scrape_247_Data <- function(cl,year){
+  # Scrapes data from 247 Recruitment website for looped years w/ looped universities
+  # Args: 
+  #   cl: Dataframe of all colleges to be reviewed. 3 Columns: 
+  #       - ID: Id of university. Matches the naming convention for looping through each website.
+  #       - Name: Generally Accepted Name of each University. 
+  #       - Conference: Conference each University.
+  #   year: Vector of years to be looped thru, chosen by the user. 
+  # Returns:
+  #   Returns a data.frame of all the data scraped that has been cleaned by the end.
   bound_data <- data.frame()
   for(y in 1:length(year)){
     print(paste0('Year:', year[y]))
