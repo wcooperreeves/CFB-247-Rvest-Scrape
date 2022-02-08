@@ -99,6 +99,7 @@ shinyServer(function(input, output) {
     
     output$checkboxrating <- renderUI({
       choice <- unique(CFBData$Star.Rating)
+      choice <- sort(choice, decreasing = TRUE)
       checkboxGroupInput( inputId = 'checkboxrating',
                           label = 'Pick Star Rating',
                           choices = choice,
@@ -108,22 +109,28 @@ shinyServer(function(input, output) {
     output$heightdistribution <- renderPlotly({
       df <- filter(CFBData, CFBData$Position == input$distributionposition, CFBData$Star.Rating %in% input$checkboxrating)
       pos <- input$distributionposition
+      # browser()
+      print(pos)
       df$Height <- as.factor(df$Height) 
       # print(head(df))
       ggplotly(ggplot(df,  aes(x = Height, color = Star.Rating, group = Star.Rating)) +
-                     geom_line(stat = 'count', size = 1.05))
-                     # labs(title=paste('Plot of Height Distribution for '))
+                     geom_line(stat = 'count', size = 1.05) +
+                     labs(title = paste0("Number of Total ", input$distributionposition, " at Given Height:")))
+                     #
  
     })
     
     output$weightdistribution <- renderPlotly({
       df <- filter(CFBData, CFBData$Position == input$distributionposition, CFBData$Star.Rating %in% input$checkboxrating)
       pos <- input$distributionposition
+      print(pos)
       df$Weight <- as.numeric(df$Weight)
       # print(head(df))
       ggplotly(ggplot(df,  aes(x = Weight, color = Star.Rating, group = Star.Rating)) +
-                 geom_line(stat = 'count', size = 1.05))
-                  # labs(title=paste('Plot of Weight Distribution for '))
+                    geom_line(stat = 'count', size = 1.05)+
+                    labs(title = paste0("Number of Total ",  input$distributionposition, " at Given Weight:")))
+                 
+                 
       
     })
     
