@@ -10,16 +10,13 @@ library(tidygeocoder)
 # REading in and setting up college file
 setwd('C:\\Users\\wcoop\\Documents\\GitHub\\CFB-247-Rvest-Scrape')
 cl <- readxl::read_excel('./college-list.xlsx')
-# cl$ID[is.na(cl$ID)] <- cl$Name[is.na(cl$ID)]
-# cl$ID <- tolower(gsub(' ', '-',cl$ID))
-# xlsx::write.xlsx(cl,'./college-list.xlsx')
 
-first_run <- TRUE  #Always set to false, change to true so it will pick up all years provided. 
+
+first_run <- FALSE  #Always set to false, change to true so it will pick up all years provided. 
 
 
 # nebraska <- dplyr::filter(cl,cl$ID == 'washington-state')
-# y <- 1
-# i <- 1
+
 
 if(first_run == TRUE){
   year <- seq(from = 2005, to = 2021, by = 1)
@@ -41,6 +38,8 @@ Scrape_247_Data <- function(cl,year){
   #   year: Vector of years to be looped thru, chosen by the user. 
   # Returns:
   #   Returns a data.frame of all the data scraped that has been cleaned by the end.
+  
+  
   bound_data <- data.frame()
   for(y in 1:length(year)){
     print(paste0('Year:', year[y]))
@@ -79,22 +78,22 @@ Scrape_247_Data <- function(cl,year){
     player_attributes <- str_extract(player_attributes, pattern = "(?<=\n).*(?=\n)") # grab everything between line breaks \n
     player_attributes <- gsub(" ",'', player_attributes, fixed = TRUE)
     player_attributes <- player_attributes[c(1:length(player_names))]
-    player_height <- sub("/.*","",player_attributes)
-    player_weight <- sub(".*/","",player_attributes)
+    player_height <- sub("/.*","", player_attributes)
+    player_weight <- sub(".*/","", player_attributes)
     
     #removing Foreign Players that dont have a location provided
     player_location <- player_location[nchar(player_location)>2]  #only keeping locations above 2 letters, just in case if a state by itself gets through
     player_location <- player_location[c(1:length(player_names))]
-    player_city  <- sub(",.*","",player_location)
-    player_state <- sub('.*, ','',player_location)
+    player_city  <- sub(",.*", "", player_location)
+    player_state <- sub('.*, ', '', player_location)
 
     
     player_position <- CFB2021 %>%
       rvest::html_nodes('div.position') %>%
       rvest::html_text()
     
-    player_position <- gsub(" ",'',player_position) #cleaning up info
-    player_position <- gsub('\n','',player_position) #cleaning up info
+    player_position <- gsub(" ", '', player_position) #cleaning up info
+    player_position <- gsub('\n', '', player_position) #cleaning up info
     player_position <- player_position[c(1:length(player_names))]  #removing Transfer Players
     
     
@@ -114,7 +113,7 @@ Scrape_247_Data <- function(cl,year){
     ## NA Does Exist. Will change to 0 Star
     star_rating <- cut(player_rating, c(0,.01,.796,.89,.983,Inf),labels = c(0,2,3,4,5))
 
-    data <- data.frame(player_names,player_city,player_state,player_position,player_height,player_weight,player_rating, star_rating, stringsAsFactors = F)
+    data <- data.frame(player_names, player_city, player_state, player_position, player_height, player_weight, player_rating, star_rating, stringsAsFactors = F)
     # browser()
     data$University <- cl$Name[i]
     data$Conference <- cl$Conference[i]
@@ -137,7 +136,8 @@ geolocation_data$city <- NULL
 geolocation_data$state <- NULL
 # geolocation_data$address <- NULL
 final_data <- dplyr::bind_cols(data,geolocation_data)
-names(final_data) <- c('Player Name','City', 'State','Position','Height','Weight','Composite Rating','Star Rating','University','Conference','Class','Latitude', 'Longitude')
+names(final_data) <- c('Player Name', 'City', 'State', 'Position', 'Height', 'Weight', 'Composite Rating', 'Star Rating', 'University',
+                       'Conference', 'Class', 'Latitude', 'Longitude')
 if(first_run == TRUE){
   write.csv(final_data,'./Player_Data.csv', row.names = FALSE)
 } else {
