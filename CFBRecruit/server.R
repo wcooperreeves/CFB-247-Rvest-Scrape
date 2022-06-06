@@ -109,13 +109,15 @@ shinyServer(function(input, output) {
     output$heightdistribution <- renderPlotly({
       df <- filter(CFBData, CFBData$Position == input$distributionposition, CFBData$Star.Rating %in% input$checkboxrating)
       pos <- input$distributionposition
-      # browser()
       print(pos)
+      df$Star.Rating <- factor(df$Star.Rating, levels = c(5,4,3,2,0))
+      Stars <- df$Star.Rating
       df$Height <- as.factor(df$Height) 
       # print(head(df))
-      ggplotly(ggplot(df,  aes(x = Height, color = Star.Rating, group = Star.Rating)) +
+      ggplotly(ggplot(df,  aes(x = Height, color = Star.Rating, group = Stars)) +
                      geom_line(stat = 'count', size = 1.05) +
-                     labs(title = paste0("Number of Total ", input$distributionposition, " at Given Height:")))
+                     labs(title = paste0("Number of Total ", input$distributionposition, " at Given Height:")),
+               tooltip = c('count','Stars'))
                      #
  
     })
@@ -125,10 +127,13 @@ shinyServer(function(input, output) {
       pos <- input$distributionposition
       print(pos)
       df$Weight <- as.numeric(df$Weight)
+      Stars <- df$Star.Rating
+      df$Star.Rating <- factor(df$Star.Rating, levels = c(5,4,3,2,0))
       # print(head(df))
-      ggplotly(ggplot(df,  aes(x = Weight, color = Star.Rating, group = Star.Rating)) +
+      ggplotly(ggplot(df,  aes(x = Weight, color = Star.Rating, group = Stars)) +
                     geom_line(stat = 'count', size = 1.05)+
-                    labs(title = paste0("Number of Total ",  input$distributionposition, " at Given Weight:")))
+                    labs(title = paste0("Number of Total ",  input$distributionposition, " at Given Weight:")),
+               tooltip = c('count','Stars'))
                  
                  
       
